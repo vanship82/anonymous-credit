@@ -65,7 +65,7 @@ contract AddressMining {
         public
         pure
         returns (uint256 difficulty) {
-        uint256 ratio = actual_blocks.mul(10**difficulty_decimals).div(target_blocks_difficulty_adjustment);
+        uint256 ratio = target_blocks_difficulty_adjustment.mul(10**difficulty_decimals).div(actual_blocks);
         if (ratio > 4 * 10**difficulty_decimals) {
             ratio = 4 * 10**difficulty_decimals;
         } else if (ratio < 10**difficulty_decimals/4) {
