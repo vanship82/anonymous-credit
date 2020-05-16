@@ -12,7 +12,7 @@ contract AddressMining {
     uint256 constant target_difficulty1 = 0xffff * 2**208;
     uint256 constant difficulty_decimals = 6;
     uint64 constant difficulty_adjustment = 2016;
-    uint64 constant target_blocks_difficulty_adjustment = difficulty_adjustment * 40;
+    uint256 constant target_blocks_difficulty_adjustment = difficulty_adjustment * 40;
     
     struct MinedAddress {
         // Mined address
