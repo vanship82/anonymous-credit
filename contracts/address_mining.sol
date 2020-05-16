@@ -14,6 +14,8 @@ contract AddressMining {
     uint64 constant difficulty_adjustment = 2016;
     uint256 constant target_blocks_difficulty_adjustment = difficulty_adjustment * 40;
     
+    event AddressMined(address addr, uint64 index);
+    
     struct MinedAddress {
         // Mined address
         address addr;
@@ -29,6 +31,8 @@ contract AddressMining {
     
     // Store list of all mined addresses
     MinedAddress[] public addresses;
+    // Mapping of mined address to its index + 1
+    mapping(address => uint64) addressMapPlusOne;
     
     // Current difficulty, number of leading zeroes in hash
     uint256 public current_difficulty;
@@ -53,6 +57,9 @@ contract AddressMining {
         bytes32 hash = calculateHash(msg.sender, index, previous_hash);
         require(verifyHash(hash, current_difficulty));  
         addresses.push(MinedAddress(msg.sender, index, current_difficulty, block.number, hash));
+        addressMapPlusOne[msg.sender] = index + 1;
+        
+        emit AddressMined(msg.sender, index);
         
         if (index > 0 && index % difficulty_adjustment == 0) {
             // Adjust difficulty
