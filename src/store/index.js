@@ -12,7 +12,9 @@ export default new Vuex.Store({
     contracts
   },
   state: {
-    mineDifficulty : 4,
+    mineDifficulty : '0x0000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
+    mineIndex: 0,
+    lastHash: '0x0000000000000000000000000000000000000000000000000000000000000000',
   },
   mutations: {
     setDifficulty (state, payload) {
