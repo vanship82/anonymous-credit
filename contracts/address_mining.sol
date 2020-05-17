@@ -8,12 +8,14 @@ contract AddressMining {
 
     using SafeMath for uint256;
 
-    bytes32 constant initial_hash = "";
-    uint256 constant target_difficulty1 = 0xffff * 2**208;
-    uint256 constant difficulty_decimals = 6;
-    uint64 constant difficulty_adjustment = 2016;
-    uint256 constant target_blocks_difficulty_adjustment = difficulty_adjustment * 40;
-    
+    bytes32 public constant initial_hash = "";
+    uint256 public constant target_difficulty1 = 0xffff * 2**224; // reduced difficulty, 2**208 in bitcoin
+    uint256 public constant difficulty_decimals = 3; // smaller decimals to prevent overflow
+    uint64 public constant difficulty_adjustment = 2016;
+    uint256 public constant target_blocks_difficulty_adjustment = difficulty_adjustment * 40;
+    address public constant genesis_addr = 0x443E9d8fD84b01Cd76a51cE6313698ae9E108183;
+    uint256 public constant genesis_difficulty = 1000; // 1 after decimals
+
     event AddressMined(address addr, uint64 index);
     
     struct MinedAddress {
@@ -32,21 +34,24 @@ contract AddressMining {
     // Store list of all mined addresses
     MinedAddress[] public addresses;
     // Mapping of mined address to its index + 1
-    mapping(address => uint64) addressMapPlusOne;
+    mapping(address => uint64) public addressMapPlusOne;
     
     // Current difficulty, number of leading zeroes in hash
     uint256 public current_difficulty;
     
     // constructor(address genesis_addr, uint256 genesis_difficulty) public {
-    //     bytes32 hash = calculateHash(genesis_addr, 0, initial_hash);
-    //     require(verifyHash(hash, genesis_difficulty));  
-    //     addresses.push(MinedAddress(genesis_addr, 0, genesis_difficulty, block.number, hash));
-    //     current_difficulty = genesis_difficulty;
-    // }
-
-    constructor(uint256 genesis_difficulty) public {
+    constructor() public {
+        bytes32 hash = calculateHash(genesis_addr, 0, initial_hash);
+        require(verifyHash(hash, genesis_difficulty));  
+        addresses.push(MinedAddress(genesis_addr, 0, genesis_difficulty, block.number, hash));
+        addressMapPlusOne[genesis_addr] = 1;
+        emit AddressMined(genesis_addr, 0);
         current_difficulty = genesis_difficulty;
     }
+
+    // constructor(uint256 genesis_difficulty) public {
+    //     current_difficulty = genesis_difficulty;
+    // }
     
     function mine(uint64 index) public {
         require(addresses.length == index);
