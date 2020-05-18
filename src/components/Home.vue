@@ -1,6 +1,7 @@
 <template>
-<div>
-  <div class="title">Home</div>
+<div class="container">
+  <div><img class="vimg" src="~@/assets/v.png"></img></div>
+  <div>welcome to anonymous <span class="screen-green">credit</span>, loan without <span class="screen-green">identification</span>.</div>
 </div>
 </template>
 
@@ -38,5 +39,13 @@ export default {
   border-radius: 4px;
   background-color: #263238;
   font-size: 14px;
+}
+.vimg {
+  width: 250px;
+  margin: 50px;
+}
+.container {
+  text-align: center;
+  margin-top: 150px;
 }
 </style>

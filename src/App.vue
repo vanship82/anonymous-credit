@@ -110,19 +110,20 @@ select {
 }
 
 button {
-  line-height: 24px;
-  font-size: 12px;
+  line-height: 30px;
+  font-size: 14px;
   text-align: center;
-  background: #263238;
-  border-radius: 4px;
-  height: 24px;
+  background: rgb(24, 25, 26);
+  border-radius: 6px;
+  height: 30px;
   color: #CFD8DC;
-  border: none;
+  border: 1px solid #CFD8DC;
   min-width: 80px;
 }
 
 button:hover {
-  background: #293939;
+  color:greenyellow;
+  border: 1px solid greenyellow;
 }
 
 ul {
