@@ -4,7 +4,35 @@ pragma solidity ^0.6.0;
 
 import "github.com/OpenZeppelin/zeppelin-solidity/contracts/math/SafeMath.sol";
 
-contract AddressMining {
+struct MinedAddress {
+    // Mined address
+    address addr;
+    // Index of the mined address
+    uint64 index;
+    // Difficulty of the mined address
+    uint256 difficulty;
+    // Block height when the address is mined
+    uint256 height;
+    // Hash of the current mined address
+    bytes32 hash;
+}
+
+abstract contract AbstractAddressMining {
+    
+    event AddressMined(address addr, uint64 index);
+
+    modifier onlyMinedAddress(address addr) {
+        require(isMinedAddress(addr));
+        _;
+    }
+
+    function isMinedAddress(address addr) public virtual view returns(bool);
+
+    function getMinedAddress(address addr) public virtual view
+        returns(uint64 inidex, uint256 diffiiculty, uint256 height);    
+}
+
+contract AddressMining is AbstractAddressMining {
 
     using SafeMath for uint256;
 
@@ -16,21 +44,6 @@ contract AddressMining {
     address public constant genesis_addr = 0x443E9d8fD84b01Cd76a51cE6313698ae9E108183;
     uint256 public constant genesis_difficulty = 1000; // 1 after decimals
 
-    event AddressMined(address addr, uint64 index);
-    
-    struct MinedAddress {
-        // Mined address
-        address addr;
-        // Index of the mined address
-        uint64 index;
-        // Difficulty of the mined address
-        uint256 difficulty;
-        // Block height when the address is mined
-        uint256 height;
-        // Hash of the current mined address
-        bytes32 hash;
-    }
-    
     // Store list of all mined addresses
     MinedAddress[] public addresses;
     // Mapping of mined address to its index + 1
@@ -55,6 +68,7 @@ contract AddressMining {
     
     function mine(uint64 index) public {
         require(addresses.length == index);
+        require(!isMinedAddress(msg.sender), "no double mined of same address");
         bytes32 previous_hash = initial_hash;
         if (index > 0) {
             previous_hash = addresses[index-1].hash;
@@ -71,6 +85,18 @@ contract AddressMining {
             uint256 actual_blocks = block.number.sub(addresses[index - difficulty_adjustment].height);
             current_difficulty = adjustDifficulty(actual_blocks, current_difficulty);
         }
+    }
+
+    function isMinedAddress(address addr) public override view returns(bool) {
+        return addressMapPlusOne[addr] > 0;
+    }
+
+    function getMinedAddress(address addr) public override view
+        returns(uint64 inidex, uint256 diffiiculty, uint256 height) {
+        uint64 id = addressMapPlusOne[addr];
+        require(id > 0);
+        MinedAddress memory ma = addresses[id-1];
+        return (ma.index, ma.difficulty, ma.height);
     }
     
     function adjustDifficulty(uint256 actual_blocks, uint256 previous_difficulty)
