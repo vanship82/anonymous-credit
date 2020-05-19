@@ -17,22 +17,17 @@ struct MinedAddress {
     bytes32 hash;
 }
 
-abstract contract AbstractAddressMining {
+interface IAddressMining {
     
     event AddressMined(address addr, uint64 index);
 
-    modifier onlyMinedAddress(address addr) {
-        require(isMinedAddress(addr));
-        _;
-    }
+    function isMinedAddress(address addr) external view returns(bool);
 
-    function isMinedAddress(address addr) public virtual view returns(bool);
-
-    function getMinedAddress(address addr) public virtual view
+    function getMinedAddress(address addr) external view
         returns(uint64 inidex, uint256 diffiiculty, uint256 height);    
 }
 
-contract AddressMining is AbstractAddressMining {
+contract AddressMining is IAddressMining {
 
     using SafeMath for uint256;
 
