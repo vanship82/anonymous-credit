@@ -4,7 +4,7 @@ pragma solidity ^0.6.0;
 
 import "github.com/OpenZeppelin/zeppelin-solidity/contracts/math/SafeMath.sol";
 
-import "IAddressMining.sol";
+import "./IAddressMining.sol";
 
 contract AddressMining is IAddressMining {
 

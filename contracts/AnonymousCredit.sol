@@ -5,7 +5,7 @@ pragma solidity ^0.6.0;
 // import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 // import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 
-import "IAddressMining.sol";
+import "./IAddressMining.sol";
 import "github.com/OpenZeppelin/zeppelin-solidity/contracts/math/SafeMath.sol";
 import "github.com/OpenZeppelin/zeppelin-solidity/contracts/access/Ownable.sol";
 import "github.com/OpenZeppelin/zeppelin-solidity/contracts/token/ERC20/IERC20.sol";
