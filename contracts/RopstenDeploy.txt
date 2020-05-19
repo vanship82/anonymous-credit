@@ -1,0 +1,14 @@
+AddressMining
+https://ropsten.etherscan.io/tx/0xb86b45087d4bf2da2d864ee8a1b0265ca5e2b947eb9ec82288841568edf9352f
+https://ropsten.etherscan.io/address/0xed8c0cbdd0260162d04167a29c8f7a21d4e6443f
+0xEd8C0cBDD0260162d04167A29C8f7a21D4E6443f
+
+cbtc
+https://ropsten.etherscan.io/tx/0x866bc95d26c0ba4286186983a07f92b6e70b2a7b7d03a198c5bb796c7d9c13bb
+https://ropsten.etherscan.io/address/0xa3619656eddd61cf7a06b7a5ea37da72d45fe224
+0xa3619656EDDD61cf7a06b7a5eA37Da72D45fE224
+
+AnonymousCredit
+https://ropsten.etherscan.io/tx/0x66916d78e9ed6828cb26b4acaaef6ba5f99b9e04ef35577ecbfee40158da6cf0
+https://ropsten.etherscan.io/address/0xe200f5d7477aac503d22c37da4705f1969654126
+0xe200F5D7477aac503d22c37da4705F1969654126
