@@ -6,7 +6,7 @@ import "github.com/OpenZeppelin/zeppelin-solidity/contracts/math/SafeMath.sol";
 
 import "../AddressMining.sol";
 
-contract MockAddressMining is AbstractAddressMining {
+contract MockAddressMining is IAddressMining {
 
     mapping(address => uint64) public addressMapPlusOne;
     uint64 public index;
