@@ -4,28 +4,7 @@ pragma solidity ^0.6.0;
 
 import "github.com/OpenZeppelin/zeppelin-solidity/contracts/math/SafeMath.sol";
 
-struct MinedAddress {
-    // Mined address
-    address addr;
-    // Index of the mined address
-    uint64 index;
-    // Difficulty of the mined address
-    uint256 difficulty;
-    // Block height when the address is mined
-    uint256 height;
-    // Hash of the current mined address
-    bytes32 hash;
-}
-
-interface IAddressMining {
-    
-    event AddressMined(address addr, uint64 index);
-
-    function isMinedAddress(address addr) external view returns(bool);
-
-    function getMinedAddress(address addr) external view
-        returns(uint64 inidex, uint256 diffiiculty, uint256 height);    
-}
+import "IAddressMining.sol";
 
 contract AddressMining is IAddressMining {
 
@@ -39,18 +18,31 @@ contract AddressMining is IAddressMining {
     address public constant genesis_addr = 0x443E9d8fD84b01Cd76a51cE6313698ae9E108183;
     uint256 public constant genesis_difficulty = 1000; // 1 after decimals
 
+    struct MinedAddress {
+        // Mined address
+        address addr;
+        // Index of the mined address
+        uint64 index;
+        // Difficulty of the mined address
+        uint256 difficulty;
+        // Block height when the address is mined
+        uint256 height;
+        // Hash of the current mined address
+        bytes32 hash;
+    }
+
     // Store list of all mined addresses
     MinedAddress[] public addresses;
     // Mapping of mined address to its index + 1
     mapping(address => uint64) public addressMapPlusOne;
-    
+
     // Current difficulty, number of leading zeroes in hash
     uint256 public current_difficulty;
-    
+
     // constructor(address genesis_addr, uint256 genesis_difficulty) public {
     constructor() public {
         bytes32 hash = calculateHash(genesis_addr, 0, initial_hash);
-        require(verifyHash(hash, genesis_difficulty));  
+        require(verifyHash(hash, genesis_difficulty));
         addresses.push(MinedAddress(genesis_addr, 0, genesis_difficulty, block.number, hash));
         addressMapPlusOne[genesis_addr] = 1;
         emit AddressMined(genesis_addr, 0);
@@ -60,7 +52,7 @@ contract AddressMining is IAddressMining {
     // constructor(uint256 genesis_difficulty) public {
     //     current_difficulty = genesis_difficulty;
     // }
-    
+
     function mine(uint64 index) public {
         require(addresses.length == index);
         require(!isMinedAddress(msg.sender), "no double mined of same address");
@@ -69,7 +61,7 @@ contract AddressMining is IAddressMining {
             previous_hash = addresses[index-1].hash;
         }
         bytes32 hash = calculateHash(msg.sender, index, previous_hash);
-        require(verifyHash(hash, current_difficulty));  
+        require(verifyHash(hash, current_difficulty));
         addresses.push(MinedAddress(msg.sender, index, current_difficulty, block.number, hash));
         addressMapPlusOne[msg.sender] = index + 1;
         
@@ -93,7 +85,7 @@ contract AddressMining is IAddressMining {
         MinedAddress memory ma = addresses[id-1];
         return (ma.index, ma.difficulty, ma.height);
     }
-    
+
     function adjustDifficulty(uint256 actual_blocks, uint256 previous_difficulty)
         public
         pure
@@ -106,14 +98,14 @@ contract AddressMining is IAddressMining {
         }
         return previous_difficulty.mul(ratio).div(10**difficulty_decimals);
     }
-    
+
     function calculateHash(address addr, uint64 index, bytes32 previous_hash)
         public
         pure
         returns (bytes32 hash) {
         return keccak256(abi.encode(addr, index, previous_hash));
     }
-    
+
     function verifyHash(bytes32 hash, uint256 difficulty)
         public
         pure

@@ -5,14 +5,14 @@ pragma solidity ^0.6.0;
 // import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 // import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 
-import "AddressMining.sol";
+import "IAddressMining.sol";
 import "github.com/OpenZeppelin/zeppelin-solidity/contracts/math/SafeMath.sol";
 import "github.com/OpenZeppelin/zeppelin-solidity/contracts/access/Ownable.sol";
 import "github.com/OpenZeppelin/zeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "github.com/OpenZeppelin/zeppelin-solidity/contracts/token/ERC20/SafeERC20.sol";
 
 contract AnonymousCredit is Ownable {
-    
+
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
@@ -24,7 +24,7 @@ contract AnonymousCredit is Ownable {
     uint256 constant initial_credit_limit = 1 * (uint256(10)**decimals);
     // initial 2-week interest rate is 80%
     uint256 constant initial_interest_rate_2w = 8 * (uint256(10)**(decimals - 1));
-    
+
     // Credit for a mined address
     struct Credit {
         // Credit limit with decimals
@@ -40,23 +40,23 @@ contract AnonymousCredit is Ownable {
         // even if payoff after payoff block
         bool payoff;
     }
-    
+
     IAddressMining public addressMining;
     mapping(address => Credit) creditMap;
     IERC20 public token;
     // 1 credit corresponding to tokenBase
     uint256 tokenBase;
-    
+
     constructor(IAddressMining am, IERC20 tok, uint256 base) public {
         addressMining = am;
         token = tok;
         tokenBase = base;
     }
-    
-    function withdraw(uint256 amount) onlyOwner public {
+
+    function withdraw(uint256 amount) public onlyOwner {
         token.safeTransfer(msg.sender, amount);
     }
-    
+
     function borrow() public {
         require(addressMining.isMinedAddress(msg.sender), "invalid mined address");
         Credit memory c = creditMap[msg.sender];
@@ -80,11 +80,12 @@ contract AnonymousCredit is Ownable {
         c.payoff = false;
         c.last_borrow_height = block.number;
         uint256 amount = c.credit_limit.mul(tokenBase).div(uint256(10) ** decimals);
-        
+
         token.safeTransfer(msg.sender, amount);
         creditMap[msg.sender] = c;
     }
-    
+
+    // Need to approve outstandingBalanceOf() to this contract before calling payoff.
     function payoff() public {
         require(addressMining.isMinedAddress(msg.sender), "invalid mined address");
         Credit memory c = creditMap[msg.sender];
@@ -92,7 +93,11 @@ contract AnonymousCredit is Ownable {
         require(!c.payoff, "payoff already");
         require(c.last_borrow_height > 0, "invalid last borrow height");
 
-        uint256 amount = c.credit_limit.mul(tokenBase).div(uint256(10) ** decimals);
+        uint256 amount = c.credit_limit
+            .mul(c.interest_rate_2w.add(uint256(10) ** decimals))
+            .div(uint256(10) ** decimals)
+            .mul(tokenBase)
+            .div(uint256(10) ** decimals);
         token.safeTransferFrom(msg.sender, address(this), amount);
 
         if (block.number >= c.last_borrow_height.add(borrow_blocks)) {
@@ -101,5 +106,18 @@ contract AnonymousCredit is Ownable {
         }
         c.payoff = true;
         creditMap[msg.sender] = c;
+    }
+
+    function outstandingBalanceOf(address addr) public view returns(uint256) {
+        require(addressMining.isMinedAddress(addr), "invalid mined address");
+        Credit memory c = creditMap[addr];
+        if (c.payoff) {
+            return 0; // no outstanding balance when payoff
+        }
+        return c.credit_limit
+            .mul(c.interest_rate_2w.add(uint256(10) ** decimals))
+            .div(uint256(10) ** decimals)
+            .mul(tokenBase)
+            .div(uint256(10) ** decimals);
     }
 }
