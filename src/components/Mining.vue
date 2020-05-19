@@ -2,6 +2,7 @@
 <div>
   <div class="title">Mining</div>
   <div class="hash"><span class="screen-green">Last Hash:</span> {{lastHash}}</div>
+  <div class="hash"><span class="screen-green">Current Difficulty:</span> {{mineDifficulty}}</div>
   <div class="hash"><span class="screen-green">Current Block:</span> {{mineIndex}}</div>
   <div class="hash"><span class="screen-green" v-show="address">Address:</span> {{address}}</div>
   <div class="hash"><span class="screen-green" v-show="address">Private Key:</span> {{key}}</div>
@@ -31,12 +32,15 @@ export default {
     stopMining() {
       this.$data.mining = false;
     },
-    mine() {
+    async mine() {
       const difficulty = web3.utils.toBN(this.$store.state.mineDifficulty);
-      for(let index=0; index < 1000; index++) {
+      for(let index=0; index < 1000000; index++) {
         let addressData = ethWallet.generate();
         this.$data.counter = this.$data.counter + 1;
         let _hash = bufferToHex(this.calculateHash(addressData.getAddressString(), this.$store.state.mineIndex, this.$store.state.lastHash));
+        if (index % 1000 == 0) {
+          console.log(index);
+        }
         if (web3.utils.toBN(_hash).lt(difficulty)) {
           this.$data.key = addressData.getPrivateKeyString();
           this.$data.address = addressData.getAddressString();
@@ -44,19 +48,14 @@ export default {
           this.$data.mining = false;
           return;
         }
-      }
-      if (this.$data.mining && this.$data.counter < 10000) {
-        console.log('Tried:', this.$data.counter);
-        this.$forceUpdate();
-        this.mine();
-      }
+      };
     },
     calculateHash(addr, index, previous_hash) {
       return keccak256(web3.eth.abi.encodeParameters(['address', 'uint64', 'bytes32'], [addr, index, previous_hash]));
     }
   },
-  mounted() {
-    this.reload();
+  mounted: async function () {
+    this.$store.dispatch('getMineState');
   },
   data() {
     return {
@@ -70,7 +69,8 @@ export default {
   computed: {
     ...mapState([
         'lastHash',
-        'mineIndex'
+        'mineIndex',
+        'mineDifficulty'
     ]),
   },   
 }
