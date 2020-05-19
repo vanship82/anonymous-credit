@@ -1,8 +1,11 @@
 pragma solidity ^0.6.0;
 
 // import "@openzeppelin/contracts/math/SafeMath.sol";
+// import "@openzeppelin/contracts/access/Ownable.sol";
+// import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+// import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 
-import "address_mining.sol";
+import "AddressMining.sol";
 import "github.com/OpenZeppelin/zeppelin-solidity/contracts/math/SafeMath.sol";
 import "github.com/OpenZeppelin/zeppelin-solidity/contracts/access/Ownable.sol";
 import "github.com/OpenZeppelin/zeppelin-solidity/contracts/token/ERC20/IERC20.sol";
@@ -38,13 +41,13 @@ contract AnonymousCredit is Ownable {
         bool payoff;
     }
     
-    AddressMining public addressMining;
+    IAddressMining public addressMining;
     mapping(address => Credit) creditMap;
     IERC20 public token;
     // 1 credit corresponding to tokenBase
     uint256 tokenBase;
     
-    constructor(AddressMining am, IERC20 tok, uint256 base) public {
+    constructor(IAddressMining am, IERC20 tok, uint256 base) public {
         addressMining = am;
         token = tok;
         tokenBase = base;
@@ -55,8 +58,7 @@ contract AnonymousCredit is Ownable {
     }
     
     function borrow() public {
-        uint64 index = addressMining.addressMapPlusOne(msg.sender);
-        require(index > 0, "invalid mined address");
+        require(addressMining.isMinedAddress(msg.sender), "invalid mined address");
         Credit memory c = creditMap[msg.sender];
         if (c.borrow_times == 0) {
             c.credit_limit = initial_credit_limit;
@@ -84,8 +86,7 @@ contract AnonymousCredit is Ownable {
     }
     
     function payoff() public {
-        uint64 index = addressMining.addressMapPlusOne(msg.sender);
-        require(index > 0, "invalid mined address");
+        require(addressMining.isMinedAddress(msg.sender), "invalid mined address");
         Credit memory c = creditMap[msg.sender];
         require(c.borrow_times > 0, "invalid borrow times");
         require(!c.payoff, "payoff already");
