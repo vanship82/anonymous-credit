@@ -211,7 +211,7 @@
 		"outputs": [
 			{
 				"internalType": "uint64",
-				"name": "inidex",
+				"name": "index",
 				"type": "uint64"
 			},
 			{
@@ -223,6 +223,19 @@
 				"internalType": "uint256",
 				"name": "height",
 				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getNextAddressIndex",
+		"outputs": [
+			{
+				"internalType": "uint64",
+				"name": "index",
+				"type": "uint64"
 			}
 		],
 		"stateMutability": "view",

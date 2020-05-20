@@ -41,6 +41,10 @@ contract MockAddressMining is IAddressMining {
         require(id > 0);
         return (id-1, 1000, 100000);
     }
+
+    function getNextAddressIndex() public override view returns(uint64 index) {
+        return index + 1;
+    }
 }
 
 contract MockBorrower {

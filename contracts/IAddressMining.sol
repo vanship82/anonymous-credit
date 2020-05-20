@@ -7,5 +7,7 @@ interface IAddressMining {
     function isMinedAddress(address addr) external view returns(bool);
 
     function getMinedAddress(address addr) external view
-        returns(uint64 inidex, uint256 diffiiculty, uint256 height);
+        returns(uint64 index, uint256 diffiiculty, uint256 height);
+
+    function getNextAddressIndex() external view returns(uint64 index);
 }

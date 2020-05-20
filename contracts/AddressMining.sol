@@ -64,9 +64,9 @@ contract AddressMining is IAddressMining {
         require(verifyHash(hash, current_difficulty));
         addresses.push(MinedAddress(msg.sender, index, current_difficulty, block.number, hash));
         addressMapPlusOne[msg.sender] = index + 1;
-        
+
         emit AddressMined(msg.sender, index);
-        
+
         if (index > 0 && index % difficulty_adjustment == 0) {
             // Adjust difficulty
             uint256 actual_blocks = block.number.sub(addresses[index - difficulty_adjustment].height);
@@ -79,11 +79,16 @@ contract AddressMining is IAddressMining {
     }
 
     function getMinedAddress(address addr) public override view
-        returns(uint64 inidex, uint256 diffiiculty, uint256 height) {
+        returns(uint64 index, uint256 diffiiculty, uint256 height) {
         uint64 id = addressMapPlusOne[addr];
         require(id > 0);
         MinedAddress memory ma = addresses[id-1];
         return (ma.index, ma.difficulty, ma.height);
+    }
+
+    function getNextAddressIndex() public override view returns(uint64 index) {
+        require(addresses.length <= 2**64-1);
+        return uint64(addresses.length);
     }
 
     function adjustDifficulty(uint256 actual_blocks, uint256 previous_difficulty)

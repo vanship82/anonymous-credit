@@ -63,6 +63,45 @@
 		"inputs": [
 			{
 				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "creditMap",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "credit_limit",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "interest_rate_2w",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint64",
+				"name": "borrow_times",
+				"type": "uint64"
+			},
+			{
+				"internalType": "uint256",
+				"name": "last_borrow_height",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "payoff",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
 				"name": "addr",
 				"type": "address"
 			}
@@ -113,6 +152,19 @@
 				"internalType": "contract IERC20",
 				"name": "",
 				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "tokenBase",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",

@@ -42,10 +42,10 @@ contract AnonymousCredit is Ownable {
     }
 
     IAddressMining public addressMining;
-    mapping(address => Credit) creditMap;
+    mapping(address => Credit) public creditMap;
     IERC20 public token;
     // 1 credit corresponding to tokenBase
-    uint256 tokenBase;
+    uint256 public tokenBase;
 
     constructor(IAddressMining am, IERC20 tok, uint256 base) public {
         addressMining = am;
