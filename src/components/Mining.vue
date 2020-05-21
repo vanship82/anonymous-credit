@@ -6,11 +6,10 @@
   <div class="hash"><span class="screen-green">Current Block:</span> {{mineIndex}}</div>
   <div class="hash"><span class="screen-green" v-show="address">Address:</span> {{address}}</div>
   <div class="hash"><span class="screen-green" v-show="address">Private Key:</span> {{key}}</div>
-  <button v-on:click="startMining" v-show="mining==false">Start Mining</button>
-  <button v-on:click="stopMining" v-show="mining">Stop Mining</button>
+  <div class="instruction">{{message}}</div>
+  <button v-on:click="startMining">Start Mining</button>
   <button v-on:click="transferGas">Transfer Gas</button>
   <button v-on:click="addressMine">Address Mine</button>
-  <button v-on:click="verifyHash">VerifyHash</button>
 </div>
 </template>
 
@@ -29,11 +28,8 @@ export default {
       // this.$data.proposals = await listExchanges();
     },
     startMining() {
-      this.$data.mining = true;
+      this.$data.steps = 1;
       this.mine();
-    },
-    stopMining() {
-      this.$data.mining = false;
     },
     async transferGas() {
       const accounts = await web3.eth.getAccounts();
@@ -45,13 +41,15 @@ export default {
       console.log(message);
       const res = await web3.eth.sendTransaction(message);
       console.log(res);
-    },
-    async verifyHash() {
-      
+      this.$data.steps = 3;
+      this.$data.instruction = 'Send the mine message to the contract.';
     },
     async addressMine() {
-      const res = await acContract.methods.mine(1).send({from: this.$data.address});
+      const accounts = await web3.eth.getAccounts();
+      const res = await acContract.methods.mine(2).send({from: accounts[0]});
       console.log(res);
+      this.$data.steps = 1;
+      this.$data.instruction = 'You could start mining again.';
     },
     async mine() {
       const difficulty = new BN(this.$store.state.mineDifficulty,16);
@@ -69,7 +67,8 @@ export default {
           this.$data.key = addressData.getPrivateKeyString();
           this.$data.address = addressData.getAddressString();
           this.$data.hash = _hash;
-          this.$data.mining = false;
+          this.$data.steps = 2;
+          this.$data.instruction = 'Please import the private key into metamask and transfer some gas fee to mined address.';
           return;
         }
       };
@@ -83,11 +82,13 @@ export default {
   },
   data() {
     return {
-      address: '0x6fc3241d26fd6a915fe5f0d61d0ad6bac2c25be6',
-      key: '0x41b86e405955cb1e97f57233e9f2efa8f05e4de5b2571c2f5d96c7c493cb1df7',
-      hash: '000000000000000000000000000000000000000000000000000000000000000800001bcbbab3be0276fc17704e085ffae799e45a6d63f75a6c870f9b1daed4b0',
+      address: '',
+      key: '',
+      hash: '',
       counter: 0,
       mining: false,
+      steps: 1,
+      message: 'Please start mining and check status from console, wait for valid address.'
     };
   },
   computed: {
