@@ -26,7 +26,7 @@ export default new Vuex.Store({
   },
   actions: {
     async getMineState (ctx) {
-      const blockLength = acContract.methods.addresses.length + 1;
+      const blockLength = acContract.methods.addresses.length + 2;
       console.log(blockLength);
       ctx.commit('setMineIndex', blockLength);
       if (blockLength == 0) {
