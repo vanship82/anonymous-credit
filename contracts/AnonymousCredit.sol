@@ -109,6 +109,7 @@ contract AnonymousCredit is Ownable {
     }
 
     function outstandingBalanceOf(address addr) public view returns(uint256) {
+        // TODO: require does not work
         require(addressMining.isMinedAddress(addr), "invalid mined address");
         Credit memory c = creditMap[addr];
         if (c.payoff) {
