@@ -13,6 +13,11 @@
             mining_
           </a>
         </li>
+        <li v-bind:class="{ active: $route.name === 'loancenter' }">
+          <a href="#/loancenter">
+            loan center_
+          </a>
+        </li>
       </ul>
     </div>
     <router-view/>

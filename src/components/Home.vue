@@ -1,6 +1,6 @@
 <template>
 <div class="container">
-  <div><img class="vimg" src="~@/assets/v.png"></img></div>
+  <div><img class="vimg" src="~@/assets/v.png" /></div>
   <div>welcome to anonymous <span class="screen-green">credit</span>, loan without <span class="screen-green">identification</span>.</div>
 </div>
 </template>
