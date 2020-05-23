@@ -17,6 +17,6 @@ if (window.ethereum) {
         })
     })
 }
-
-const acContract = new web3.eth.Contract(require('./address_mining_abi.json'), '0xEd8C0cBDD0260162d04167A29C8f7a21D4E6443f');
-export { web3, acContract };
+const acContract = new web3.eth.Contract(require('./anonymous_credit_abi.json'), '0x1d9c667325e12e2fd1329ceb51752dac3d5e5ca2');
+const amContract = new web3.eth.Contract(require('./address_mining_abi.json'), '0xaA737aBA880090F3fb5161BEA76f7c22864a2CCe');
+export { web3, acContract, amContract };
