@@ -6,6 +6,7 @@ pragma solidity ^0.6.0;
 // import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 
 import "./IAddressMining.sol";
+import "./IPriceFeed.sol";
 import "github.com/OpenZeppelin/zeppelin-solidity/contracts/math/SafeMath.sol";
 import "github.com/OpenZeppelin/zeppelin-solidity/contracts/access/Ownable.sol";
 import "github.com/OpenZeppelin/zeppelin-solidity/contracts/token/ERC20/IERC20.sol";
@@ -44,13 +45,14 @@ contract AnonymousCredit is Ownable {
     IAddressMining public addressMining;
     mapping(address => Credit) public creditMap;
     IERC20 public token;
-    // 1 credit corresponding to tokenBase
-    uint256 public tokenBase;
+    uint64 public tokenDecimals;
+    IPriceFeed public priceFeed;
 
-    constructor(IAddressMining am, IERC20 tok, uint256 base) public {
+    constructor(IAddressMining am, IERC20 tok, IPriceFeed pf, uint64 td) public {
         addressMining = am;
         token = tok;
-        tokenBase = base;
+        priceFeed = pf;
+        tokenDecimals = td;
     }
 
     function withdraw(uint256 amount) public onlyOwner {
@@ -59,6 +61,9 @@ contract AnonymousCredit is Ownable {
 
     function borrow() public {
         require(addressMining.isMinedAddress(msg.sender), "invalid mined address");
+        (uint256 priceTimes100, uint256 height) = priceFeed.getPrice("BTC");
+        // price is not too old
+        require(height.add(borrow_blocks) >= block.number, "price is too old");
         Credit memory c = creditMap[msg.sender];
         if (c.borrow_times == 0) {
             c.credit_limit = initial_credit_limit;
@@ -79,15 +84,25 @@ contract AnonymousCredit is Ownable {
         c.borrow_times++;
         c.payoff = false;
         c.last_borrow_height = block.number;
-        uint256 amount = c.credit_limit.mul(tokenBase).div(uint256(10) ** decimals);
+        uint256 amount = c.credit_limit.mul(100).div(priceTimes100)
+            .div(uint256(10) ** (decimals-tokenDecimals));
 
         token.safeTransfer(msg.sender, amount);
         creditMap[msg.sender] = c;
     }
 
+    function calculateAmount(uint256 credit_limit) public view returns (uint256 amount) {
+        (uint256 priceTimes100, ) = priceFeed.getPrice("BTC");
+        return credit_limit.mul(100).div(priceTimes100)
+            .div(uint256(10) ** (decimals-tokenDecimals));
+    }
+
     // Need to approve outstandingBalanceOf() to this contract before calling payoff.
     function payoff() public {
         require(addressMining.isMinedAddress(msg.sender), "invalid mined address");
+        (uint256 priceTimes100, uint256 height) = priceFeed.getPrice("BTC");
+        // price is not too old
+        require(height.add(borrow_blocks) >= block.number, "price is too old");
         Credit memory c = creditMap[msg.sender];
         require(c.borrow_times > 0, "invalid borrow times");
         require(!c.payoff, "payoff already");
@@ -96,8 +111,8 @@ contract AnonymousCredit is Ownable {
         uint256 amount = c.credit_limit
             .mul(c.interest_rate_2w.add(uint256(10) ** decimals))
             .div(uint256(10) ** decimals)
-            .mul(tokenBase)
-            .div(uint256(10) ** decimals);
+            .mul(100).div(priceTimes100)
+            .div(uint256(10) ** (decimals-tokenDecimals));
         token.safeTransferFrom(msg.sender, address(this), amount);
 
         if (block.number >= c.last_borrow_height.add(borrow_blocks)) {
@@ -111,6 +126,9 @@ contract AnonymousCredit is Ownable {
     function outstandingBalanceOf(address addr) public view returns(uint256) {
         // TODO: require does not work
         require(addressMining.isMinedAddress(addr), "invalid mined address");
+        (uint256 priceTimes100, uint256 height) = priceFeed.getPrice("BTC");
+        // price is not too old
+        require(height.add(borrow_blocks) >= block.number, "price is too old");
         Credit memory c = creditMap[addr];
         if (c.payoff) {
             return 0; // no outstanding balance when payoff
@@ -118,7 +136,7 @@ contract AnonymousCredit is Ownable {
         return c.credit_limit
             .mul(c.interest_rate_2w.add(uint256(10) ** decimals))
             .div(uint256(10) ** decimals)
-            .mul(tokenBase)
-            .div(uint256(10) ** decimals);
+            .mul(100).div(priceTimes100)
+            .div(uint256(10) ** (decimals-tokenDecimals));
     }
 }

@@ -16,6 +16,14 @@ contract TestCBTC is ERC20 {
     }
 }
 
+contract MockPriceFeed is IPriceFeed {
+
+    function getPrice(string memory) public override view
+        returns(uint256 price, uint256 height) {
+        return (9000*100, block.number);
+    }
+}
+
 contract MockAddressMining is IAddressMining {
 
     mapping(address => uint64) public addressMapPlusOne;
@@ -42,7 +50,7 @@ contract MockAddressMining is IAddressMining {
         return (id-1, 1000, 100000);
     }
 
-    function getNextAddressIndex() public override view returns(uint64 index) {
+    function getNextAddressIndex() public override view returns(uint64 _index) {
         return index + 1;
     }
 }
@@ -76,8 +84,9 @@ contract TestAnonymousCredit {
 
     function testAnonymousCredit() public {
         ERC20 cbtc = new TestCBTC();
+        IPriceFeed pf = new MockPriceFeed();
         MockAddressMining am = new MockAddressMining();
-        AnonymousCredit ac = new AnonymousCredit(am, cbtc, 10**4);
+        AnonymousCredit ac = new AnonymousCredit(am, cbtc, pf, 8);
         cbtc.transfer(address(ac), 1000 * (10**8));
         emit DebugLog("initial deposit main", cbtc.balanceOf(address(this)));
         emit DebugLog("initial deposit ac", cbtc.balanceOf(address(ac)));
@@ -97,8 +106,8 @@ contract TestAnonymousCredit {
         emit DebugLog("after borrow ac", cbtc.balanceOf(address(ac)));
         emit DebugLog("after borrow b2 outstanding balance", ac.outstandingBalanceOf(address(b2)));
 
-        cbtc.transfer(address(b1), 80 * (10**2)); // 80% 2w interest rate
-        b1.approve(address(ac), 180 * (10**2));
+        cbtc.transfer(address(b1), 8889); // 80% 2w interest rate
+        b1.approve(address(ac), 20000);
         b1.payoff();
     }
 }

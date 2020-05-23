@@ -14,6 +14,6 @@ https://ropsten.etherscan.io/address/0xE1dB5e16FBe1FA6539f07933f333cC84C22711Bd
 0xE1dB5e16FBe1FA6539f07933f333cC84C22711Bd
 
 AnonymousCredit
-https://ropsten.etherscan.io/tx/0xaf9d2b842706a7dff0d05df6fe9a68c8f089c35b9ac0a2a1786fbde449057212
-https://ropsten.etherscan.io/address/0x1d9c667325e12e2fd1329ceb51752dac3d5e5ca2
-0x1d9C667325e12e2FD1329ceB51752Dac3d5e5Ca2 # Wrong token base, expect 10000, actual 1000
+https://ropsten.etherscan.io/tx/0x8dbf106f226e40df54c3f3365cd6dd643c195cda0559c2637c75fb5c754cf182
+https://ropsten.etherscan.io/address/0x98565c9d33e609412dd275d68f6bd02a4664bfdd
+0x98565C9D33e609412dD275d68f6Bd02A4664BFDd
