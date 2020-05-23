@@ -110,3 +110,6 @@ dist
 *.ntvs*
 *.njsproj
 *.sln
+
+geth-data
+
