@@ -45,6 +45,10 @@ Vue.filter('eth', function (value) {
   return (value/1e18).toFixed(8);
 });
 
+Vue.filter('btc', function (value) {
+  return (value/1e8).toFixed(8);
+});
+
 export default {
   name: 'App',
   components: { },

@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import { web3, acContracts } from '../web3';
+import { web3, acContracts } from '../web3c';
 
 export default {
   name: 'Home',

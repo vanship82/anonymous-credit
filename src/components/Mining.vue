@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { web3, amContract } from '../web3';
+import { web3, amContract } from '../web3c';
 import { mapState } from 'vuex';
 import ethWallet from 'ethereumjs-wallet';
 import { keccak256, bufferToHex, bufferToInt } from 'ethereumjs-util';
@@ -42,7 +42,7 @@ export default {
       const message = {
         from: accounts[0],
         to: this.$data.address,
-        value: web3.utils.toWei('0.2', 'ether')
+        value: web3.utils.toWei('0.1', 'ether')
       };
       console.log(message);
       const res = await web3.eth.sendTransaction(message);
