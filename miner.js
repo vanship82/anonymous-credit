@@ -6,7 +6,7 @@ import fs from 'fs';
 
 // configurations
 var web3 = new Web3('wss://ropsten.infura.io/ws/v3/4afb7fbcd3aa47d887121272bfc6b00a');
-const acContract = new web3.eth.Contract(require('./src/web3/address_mining_abi.json'), '0xaA737aBA880090F3fb5161BEA76f7c22864a2CCe');
+const acContract = new web3.eth.Contract(require('./src/web3c/address_mining_abi.json'), '0xaA737aBA880090F3fb5161BEA76f7c22864a2CCe');
 const lowestBalance = web3.utils.toBN(web3.utils.toWei('250', 'micro'));
 const gasPrice = web3.utils.toWei('1', 'gwei');
 
