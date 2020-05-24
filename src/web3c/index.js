@@ -1,8 +1,10 @@
 import Web3 from 'web3';
 
-if (typeof web3 !== 'undefined') {
+let web3;
+
+if (typeof window.web3 !== 'undefined') {
     console.log('Metamask linked');
-    web3 = new Web3(web3.currentProvider);
+    web3 = new Web3(window.web3.currentProvider);
 } else {
     console.log('No currentProvider for Web3js');
     web3 = new Web3();
@@ -13,7 +15,6 @@ if (window.ethereum) {
     window.ethereum.enable(function(){
         web3.eth.getAccounts((error, accounts) => {
             web3.eth.defaultAccount = accounts[0];
-            console.log(accounts)
         })
     })
 }
